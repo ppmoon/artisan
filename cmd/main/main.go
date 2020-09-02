@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ppmoon/artisan/app"
+	"artisan/app"
 )
 
 func main() {

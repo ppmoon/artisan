@@ -1,2 +1,20 @@
-[database]
+[mysql]
     user = "root"
+    password = ""
+    ip = "127.0.0.1"
+    port = "3306"
+    #  连接数据库的名称
+    name = "test"
+    #  数据库连接池
+    #  设置最大空闲连接数量
+    max_idle = 20
+    #  设置最大可开启连接数
+    max_open = 100
+    #  设置超时时间单位秒
+    max_life_time = 20
+    #  是否开启日志模式
+    log_mode = true
+[redis]
+    addr = "127.0.0.1:6379"
+    password = ""
+    db = 0
