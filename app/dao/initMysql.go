@@ -1,10 +1,12 @@
 package dao
 
 import (
-	"artisan/app/log"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"log"
+	"os"
 	"time"
 )
 
@@ -19,21 +21,34 @@ func InitMysql() {
 	dbName := viper.GetString("mysql.name")
 	//设置数据库连接
 	var err error
-	dbMysql, err = gorm.Open("mysql", dbUser+`:`+dbPassWord+`@tcp(`+dbIp+`:`+dbPort+`)/`+dbName+`?charset=utf8mb4&parseTime=True&loc=Local`)
+	dsn := dbUser + `:` + dbPassWord + `@tcp(` + dbIp + `:` + dbPort + `)/` + dbName + `?charset=utf8mb4&parseTime=True&loc=Local`
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold: time.Second, // Slow SQL threshold
+			LogLevel:      logger.Info, // Log level
+			Colorful:      true,        // Disable color
+		},
+	)
+	dbMysql, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: newLogger,
+	})
 	//检查数据库连接
 	if err != nil {
-		log.Error("connect to mysql fails: ", err.Error())
-		panic("failed to connect database")
+		panic("failed to connect database " + err.Error())
+	}
+	sqlDb, err := dbMysql.DB()
+	if err != nil {
+		panic(err)
 	}
 	//设置数据库连接池
 	dbMaxIdle := viper.GetInt("mysql.max_idle")
 	dbMaxOpen := viper.GetInt("mysql.max_open")
 	dbMaxLifeTime := viper.GetDuration("mysql.max_life_time")
 	//最大空闲数量
-	dbMysql.DB().SetMaxIdleConns(dbMaxIdle)
+	sqlDb.SetMaxIdleConns(dbMaxIdle)
 	//最大开启数量
-	dbMysql.DB().SetMaxOpenConns(dbMaxOpen)
+	sqlDb.SetMaxOpenConns(dbMaxOpen)
 	//超时设置
-	dbMysql.DB().SetConnMaxLifetime(time.Second * dbMaxLifeTime)
-	dbMysql.LogMode(viper.GetBool("mysql.log_mode"))
+	sqlDb.SetConnMaxLifetime(time.Second * dbMaxLifeTime)
 }

@@ -12,8 +12,6 @@
     max_open = 100
     #  设置超时时间单位秒
     max_life_time = 20
-    #  是否开启日志模式
-    log_mode = true
 [redis]
     addr = "127.0.0.1:6379"
     password = ""
