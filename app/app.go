@@ -5,6 +5,7 @@ import (
 	"artisan/app/config"
 	"artisan/app/dao"
 	"artisan/app/log"
+	"github.com/spf13/viper"
 )
 
 type App struct {
@@ -34,11 +35,17 @@ func (a *App) Run() {
 	log.InitLog()
 	log.Info("log init success")
 	// init redis
-	dao.InitRedis()
-	log.Info("redis init success")
-	// init mysql
-	dao.InitMysql()
-	log.Info("mysql init success")
-	// gin http must last start
-	api.InitHttp()
+	if viper.GetBool("app.redis_status") {
+		dao.InitRedis()
+		log.Info("redis init success")
+	}
+	if viper.GetBool("app.mysql_status") {
+		// init mysql
+		dao.InitMysql()
+		log.Info("mysql init success")
+	}
+	if viper.GetBool("app.http_status") {
+		// gin http must last start
+		api.InitHttp()
+	}
 }

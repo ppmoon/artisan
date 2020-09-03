@@ -1,3 +1,5 @@
 [app]
     mode = "dev"
-    port = "8080"
+    redis_status = true # true open redis component;false close redis component
+    mysql_status = true # true open mysql component;false close mysql component
+    http_status = true # true open http component;false close http component
