@@ -39,6 +39,9 @@ func InitLog() {
 func GetZapLogger() *zap.Logger {
 	return logger
 }
+func GetZapLoggerSugar() *zap.SugaredLogger {
+	return logSugar
+}
 
 func Debug(args ...interface{}) {
 	logSugar.Debug(args)
